@@ -1,0 +1,52 @@
+# 网关服务配置
+server:
+  port: 7070 # 网关服务端口
+
+spring:
+  application:
+    name: gateway
+  cloud:
+    discovery:
+      enabled: true
+    gateway:
+      discovery:
+        locator:
+          enabled: true # 开启注册中心服务自动路由；通过服务名动态路由（如http://网关IP:端口/服务名/**）
+      routes:
+        - id: order-service # 路由ID，没有固定规则，但需要保证唯一。
+          uri: lb://order # 目标服务名(需与注册中心一致)；uri:指定目标服务地址，lb://表示通过负载均衡调用服务；
+          predicates:
+            - Path=/order/** # 路由断言，即请求路径匹配规则；用于匹配路径（如http://网关IP:端口/order/**）
+          filters:
+            - ServerBlock=order,0 # 限流order,1为拦截,0为不拦截。
+            - name: RequestRateLimiter #限流配置✅
+              args:
+                redis-rate-limiter.replenishRate: 10 # 每秒放入令牌的速率 (往桶里补充的速度)
+                redis-rate-limiter.burstCapacity: 10 # 最大并发数量 (桶的大小)
+                key-resolver: "#{@serviceKeyResolver}" # 使用服务名做限流Key
+
+        - id: goods-service # 路由ID。
+          uri: lb://goods # 目标服务名
+          predicates: # 路由断言
+            - Path=/goods/**
+          filters:
+            - ServerBlock=goods,0 # 限流goods,为不拦截。
+# redis配置✅
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+# Eureka配置
+eureka:
+  client:
+    service-url:
+      # defaultZone: http://localhost:7000/eureka # Eureka注册中心地址（无认证）
+      defaultZone: http://zcz:813168@localhost:7000/eureka # Eureka注册中心地址（有认 证）
+  instance:
+    instance-id: ${spring.application.name}:${server.port} # 实例ID唯一（避免IP变化导致重复）
+
+logging:
+  level:
+    org.springframework.cloud.gateway: TRACE
+    reactor.netty.http.client: DEBUG
