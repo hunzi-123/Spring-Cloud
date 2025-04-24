@@ -1,0 +1,45 @@
+## 三节点集群配置
+#server:
+#  port: 6001
+#spring:
+#  config:
+#    activate:
+#        on-profile: server1 # 标识这是server1环境的配置
+#  application:
+#    name: eureka-server1
+#eureka:
+#  client:
+#    register-with-eureka: false #是否将本服务注册到eureka中
+#    fetch-registry: false #是否从eureka中获取服务注册信息
+#    service-url:
+#      defaultZone: http://server2:6002/eureka/, http://server3:6003/eureka/ #eureka服务地址
+#---
+#server:
+#  port: 6002
+#spring:
+#  config:
+#    activate:
+#      on-profile: server2 # 标识这是server1环境的配置
+#  application:
+#    name: eureka-server2
+#eureka:
+#  client:
+#    register-with-eureka: false #是否将本服务注册到eureka中
+#    fetch-registry: false #是否从eureka中获取服务注册信息
+#    service-url:
+#      defaultZone: http://server2:6001/eureka/, http://server3:6003/eureka/ #eureka服务地址
+#---
+#      server:
+#        port: 6003
+#      spring:
+#        config:
+#          activate:
+#            on-profile: server3 # 标识这是server1环境的配置
+#        application:
+#          name: eureka-server3
+#      eureka:
+#        client:
+#          register-with-eureka: false #是否将本服务注册到eureka中
+#          fetch-registry: false #是否从eureka中获取服务注册信息
+#          service-url:
+#            defaultZone: http://server2:6001/eureka/, http://server3:6002/eureka/ #eureka服务地址
