@@ -10,20 +10,24 @@ spring:
 eureka:
   client:
     service-url:
-      # defaultZone: http://localhost:8000/eureka # Eureka注册中心地址
-      defaultZone: http://server1:6001/eureka/,http://server2:6002/eureka/,http://server3:6003/eureka/
+       defaultZone: http://localhost:7000/eureka/ # Eureka注册中心地址
+       should-unregister-on-shutdown: false
+#      defaultZone: http://server1:6001/eureka/,http://server2:6002/eureka/,http://server3:6003/eureka/
     instance:
+      instance-id: ${spring.application.name}:${server.port}
       lease-renewal-interval-in-seconds: 30 # 心跳间隔时间
       lease-expiration-duration-in-seconds: 90 # 心跳超时时间，超过这个时间，Eureka会从注册中心中移除这个服务
       prefer-ip-address: true # ✅ 强烈建议开启
+
 ---
-# 副本1配置
+# 副本1配置spring
 spring:
   config:
     activate:
       on-profile: replica1 # 指定profile名称
 server:
-  port: 7001
+  port: 7011
+
 ---
 # 副本2配置spring:
 spring:
@@ -31,12 +35,13 @@ spring:
     activate:
       on-profile: replica2 # 指定profile名称
 server:
-  port: 7002
+  port: 7012
+
 ---
 # 副本3配置spring:
 spring:
   config:
     activate:
-      on-profile: 3 # 指定profile名称
+      on-profile: replica3 # 指定profile名称
 server:
-  port: 7003
+  port: 7013
