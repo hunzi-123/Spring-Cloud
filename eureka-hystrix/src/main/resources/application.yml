@@ -1,0 +1,23 @@
+server:
+  port: 7004
+spring:
+  application:
+    name: hystrix
+
+# Eureka客户端配置（服务发现）
+eureka:
+  client:
+    service-url:
+      defaultZone: http://zcz:813168@localhost:7000/eureka # Eureka注册中心地址
+
+# resilience4j配置
+resilience4j:
+  circuitbreaker:
+    instances:
+      goodsService: # 必须与@Circuitbreaker的name一致
+        registerHealthIndicator: true # 是否注册为健康检查
+        slidingWindowSize: 5 # 滑动窗口大小
+        failureRateThreshold: 50 # 失败率阈值
+        waitDurationInOpenState: 10s # 熔断器打开后，多久进入半开状态
+        permittedNumberOfCallsInHalfOpenState: 2 # 半开状态下允许通过的请求数量
+        automaticTransitionFromOpenToHalfOpenEnabled: true # 是否自动转换熔断器状态
